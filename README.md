@@ -102,7 +102,12 @@ It's highly recommended to install this driver via DKMS especially Secure Boot i
    sudo make install_fw
    ```
 
-5. Enroll the MOK (Machine Owner Key), this is needed **ONLY IF** Secure Boot is enabled on your machine.
+5. Copy the configuration file `rtw88.conf` to /etc/modprobe.d/
+   ```
+   sudo cp -v rtw88.conf /etc/modprobe.d/
+   ```
+
+6. Enroll the MOK (Machine Owner Key), this is needed **ONLY IF** Secure Boot is enabled on your machine.
    ```
    sudo mokutil --import /var/lib/dkms/mok.pub
    ```
@@ -135,6 +140,9 @@ sudo make install
 ```bash
 sudo make install_fw
 ```
+```
+sudo cp -v rtw88.conf /etc/modprobe.d/
+```
 ---
 
 ### Installation for Arch-based Distros 🛠
@@ -156,7 +164,7 @@ makepkg -si
 Below is important information for using this driver.
 
 ### 1. Blacklisting 🚫
-A file called `rtw88.conf` will be installed into `/etc/modprobe.d`. It will blacklist all in-kernel rtw88 drivers, however, it will not blacklist out-of-kernel vendor drivers. You will need to uninstall any out-of-kernel vendor drivers that you have installed that may conflict.
+The configuration file `rtw88.conf` will blacklist all in-kernel rtw88 drivers, however, it will not blacklist out-of-kernel vendor drivers. You will need to uninstall any out-of-kernel vendor drivers that you have installed that may conflict.
 
 ### 2. Recovery Problems After Sleep/Hibernation 🛌
 Some BIOSs have trouble changing power state from D3hot to D0. If you have this problem, run 
@@ -196,14 +204,23 @@ cfg80211             1064960  2 rtw_core,mac80211
 
 ### 4. How To Update The Driver Installed via DKMS
 
-1. Remove the installed rtw88 drivers completely, please see [Q1](#q1-how-to-remove-this-driver-if-it-doesnt-work-as-expected) in Q&A for details.
+1. Remove the rtw88 drivers.
+   ```
+   sudo dkms remove rtw88/0.6 --all
+   ```
+   ```
+   sudo rm -rf /var/lib/dkms/rtw88
+   ```
+   ```
+   sudo rm -rf /usr/src/rtw88-0.6
+   ```
 
 2. Run this command in the rtw88 source directory to pull the latest code 
    ```
    git pull
    ```
 
-3. Build, sign, install the rtw88 driver from the latest code
+3. Build, sign and install the rtw88 driver from the latest code
    ```
    sudo dkms install $PWD
    ```
